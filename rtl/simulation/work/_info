@@ -11,7 +11,7 @@ cModel Technology
 Z0 d//wsl$$/Ubuntu/home/nikopapa88ece/ProcessorArch/rtl/simulation
 valu
 Z1 DXx6 sv_std 3 std 0 22 VYECXdT12H8WgbUP_5Y6:3
-Z2 !s110 1713714194
+Z2 !s110 1713726355
 !i10b 1
 !s100 3VX9Aa?kzFFf1kaDjTRh12
 Z3 !s11b Dg1SIo80bB@j0V0VzS_@n1
@@ -28,7 +28,7 @@ Z8 OV;L;2020.1;71
 r1
 !s85 0
 31
-Z9 !s108 1713714192.000000
+Z9 !s108 1713726355.000000
 !s107 processor_tb.sv|memory.sv|../processor/processor.sv|../processor/wb_stage.sv|../processor/mem_stage.sv|../processor/ex_stage.sv|../processor/id_stage.sv|../processor/regfile.sv|../processor/if_stage.sv|../sys_defs.vh|
 Z10 !s90 -reportprogress|300|-f|files_rtl.f|
 !i113 1
@@ -61,17 +61,17 @@ vid_stage
 R1
 R2
 !i10b 1
-!s100 KhTAG5>3cV^]5oI>`>>Sj0
+!s100 IX9TE:b:]YUILhZhBdkAH1
 R3
-Il05n[W3<]:;IdG4`9f9J21
+I5Sz06]VKf[<:4O[k_GAGm1
 R4
 S1
 R0
-Z13 w1713713892
+Z13 w1713726105
 Z14 8../processor/id_stage.sv
 Z15 F../processor/id_stage.sv
 !i122 0
-L0 159 144
+L0 159 152
 R8
 r1
 !s85 0
@@ -85,13 +85,13 @@ vif_stage
 R1
 R2
 !i10b 1
-!s100 4f6IfoChEElDWoVG:m4Q83
+!s100 L?MMK1Xge4U4nGgcBafMT2
 R3
-IeQg0cmf>ogiFGJmI;g6<g1
+I7XLof4WVB<4COcX3]L8;72
 R4
 S1
 R0
-w1713697304
+w1713726321
 8../processor/if_stage.sv
 F../processor/if_stage.sv
 !i122 0
@@ -131,7 +131,7 @@ R10
 R11
 vmem
 R1
-Z16 !s110 1713714195
+Z16 !s110 1713726356
 !i10b 1
 !s100 gLRAW@2j;gP>f5ZOc8IME3
 R3
@@ -181,13 +181,13 @@ vprocessor
 R1
 R16
 !i10b 1
-!s100 Md0hF>daY^<dK<[=_a?k]1
+!s100 gVVS5^24R67k29?HR8X>12
 R3
-IZQ[8M7j7H^kEe8`P4Ai1o3
+IM?ScC^:aP`]oWiYaZFi>G3
 R4
 S1
 R0
-w1713714102
+w1713726339
 8../processor/processor.sv
 F../processor/processor.sv
 !i122 0

@@ -17,6 +17,8 @@ add wave if_valid_inst_out
 add wave if_id_valid_inst
 add wave id_ex_valid_inst
 add wave mem_wb_valid_inst
+add wave -position insertpoint  \
+sim:/processor_tb/proc_module/id_stage_0/regf_0/registers
 radix hex
 
 run -all

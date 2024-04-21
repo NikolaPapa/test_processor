@@ -164,7 +164,7 @@ if_stage if_stage_0 (
 //            IF/ID Pipeline Register           //
 //                                              //
 //////////////////////////////////////////////////
-assign if_id_enable = (~HzDU_detect); // stall when d_hazard detected
+assign if_id_enable = (~HzDU_detect); //stall when d_hazard detected
 
 always_ff @(posedge clk or posedge rst) begin
 	if(rst) begin
@@ -227,7 +227,7 @@ id_stage id_stage_0 (
 //            ID/EX Pipeline Register           //
 //                                              //
 //////////////////////////////////////////////////
-assign id_ex_enable =1; // disabled when HzDU initiates a stall
+assign id_ex_enable = 1; // disabled when HzDU initiates a stall
 // synopsys sync_set_rst "rst"
 always_ff @(posedge clk or posedge rst) begin
 	if (rst) begin //sys_rst
@@ -268,8 +268,8 @@ always_ff @(posedge clk or posedge rst) begin
             id_ex_reg_wr        <=  id_reg_wr_out;
 			
 			id_ex_PC            <=  if_id_PC;
-			id_ex_IR            <= 	(HzDU_detect || ex_take_branch_out) ? `NOOP_INST : if_id_IR;
-			// allagi 2 gia jumps ex_take_branch_out ? `NOOP_INST :
+			id_ex_IR            <= 	(HzDU_detect) ? `NOOP_INST : if_id_IR;
+			// allagi 2 gia jumps (HzDU_detect) ? `NOOP_INST :
 
 			id_ex_rega          <=  id_rega_out;
 			id_ex_regb          <=  id_regb_out;
