@@ -174,7 +174,7 @@ always_ff @(posedge clk or posedge rst) begin
     else if (if_id_enable) begin
 		if_id_PC         <=  if_PC_out;
 		if_id_NPC        <=  if_NPC_out;
-		if_id_IR         <=  ex_take_branch_out ? `NOOP_INST : if_IR_out; //allagi gia jump 1
+		if_id_IR         <=  if_IR_out; //allagi gia jump 1 ex_take_branch_out ? `NOOP_INST :
         if_id_valid_inst <= if_valid_inst_out;
     end 
 end 
@@ -262,7 +262,7 @@ always_ff @(posedge clk or posedge rst) begin
             id_ex_reg_wr        <=  id_reg_wr_out;
 			
 			id_ex_PC            <=  if_id_PC;
-			id_ex_IR            <=  ex_take_branch_out ? `NOOP_INST : if_id_IR;// allagi 2 gia jumps
+			id_ex_IR            <=  if_id_IR;// allagi 2 gia jumps ex_take_branch_out ? `NOOP_INST :
 			id_ex_rega          <=  id_rega_out;
 			id_ex_regb          <=  id_regb_out;
 			id_ex_imm			<=  id_immediate_out;
