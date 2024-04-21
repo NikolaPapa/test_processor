@@ -210,8 +210,8 @@ assign write_en=mem_wb_valid_inst & mem_wb_reg_wr;
 
 //Data hazard detection unit
 logic d_from_ra, d_from_rb;
-assign d_from_ra = ((ra_idx == rd_id_ex)||(ra_idx == rd_ex_mem)||(ra_idx == rd_mem_wb))? 1 : 0;
-assign d_from_rb = ((rb_idx == rd_id_ex)||(rb_idx == rd_ex_mem)||(rb_idx == rd_mem_wb))? 1 : 0;
+assign d_from_ra = ((ra_idx!=0)&&(ra_idx == rd_id_ex)||(ra_idx == rd_ex_mem)||(ra_idx == rd_mem_wb))? 1 : 0;
+assign d_from_rb = ((rb_idx!=0)&&(rb_idx == rd_id_ex)||(rb_idx == rd_ex_mem)||(rb_idx == rd_mem_wb))? 1 : 0;
 assign d_hazard_detected = d_from_ra | d_from_rb;
 
 //end of detection
