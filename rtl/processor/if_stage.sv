@@ -8,6 +8,7 @@ module if_stage  (input logic 	      clk,             // system clk
 			      input logic   	  ex_take_branch_out,// taken-branch signal
 				  input logic [31:0]  ex_target_PC_out,  // target pc: use if take_branch is TRUE
 				  input logic [31:0]  Imem2proc_data,    // Data coming back from instruction-memory
+				  input logic 		  d_hazard_detected, // Data from decode stage data hazard detection
 					
 				  output logic [31:0] proc2Imem_addr,    // Address sent to Instruction memory
 				  output logic [31:0] if_PC_out,         // current PC
@@ -33,7 +34,7 @@ assign PC_plus_4 = PC_reg + 4;
 assign next_PC = (ex_take_branch_out) ? ex_target_PC_out : PC_plus_4;
 
 // stall PC
-assign PC_enable = if_valid_inst_out | ex_take_branch_out;
+assign PC_enable = (if_valid_inst_out | ex_take_branch_out) & (~d_hazard_detected);// allagi gia hazard detect
 
 // Pass PC down pipeline w/instruction
 assign if_PC_out = PC_reg;

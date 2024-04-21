@@ -167,6 +167,11 @@ input logic [4:0]	mem_wb_dest_reg_idx, 	//index of rd
 input logic [31:0] 	wb_reg_wr_data_out, 	// Reg write data from WB Stage
 input logic         if_id_valid_inst,
 
+input logic [4:0]	rd_id_ex,
+input logic [4:0]	rd_ex_mem,// For HazardUnit
+input logic [4:0]	rd_mem_wb,
+output logic 		d_hazard_detected, // To stall
+
 output logic [31:0] id_ra_value_out,    	// reg A value
 output logic [31:0] id_rb_value_out,    	// reg B value
 output logic [31:0]	id_immediate_out,		// sign-extended 32-bit immediate
@@ -202,6 +207,14 @@ assign rc_idx=if_id_IR[11:7];  // inst operand C register index
 
 logic write_en;
 assign write_en=mem_wb_valid_inst & mem_wb_reg_wr;
+
+//Data hazard detection unit
+logic d_from_ra, d_from_rb;
+assign d_from_ra = ((ra_idx == rd_id_ex)||(ra_idx == rd_ex_mem)||(ra_idx == rd_mem_wb))? 1 : 0;
+assign d_from_rb = ((rb_idx == rd_id_ex)||(rb_idx == rd_ex_mem)||(rb_idx == rd_mem_wb))? 1 : 0;
+assign d_hazard_detected = d_from_ra | d_from_rb;
+
+//end of detection
 
 regfile regf_0(.clk		(clk),
 			   .rst		(rst),

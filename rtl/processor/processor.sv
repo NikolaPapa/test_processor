@@ -71,6 +71,7 @@ logic         	id_valid_inst_out;
 logic 			id_uncond_branch;
 logic 			id_cond_branch;
 logic [31:0]    id_pc_add_opa;
+logic			HzDU_detect;//hazard detection data
 
 // Outputs from ID/EX Pipeline Register
 logic 			id_ex_reg_wr;
@@ -147,6 +148,7 @@ if_stage if_stage_0 (
 .ex_take_branch_out	(ex_mem_take_branch),
 .ex_target_PC_out	(ex_mem_target_PC),
 .Imem2proc_data		(instruction),
+.d_hazard_detected	(HzDU_detect), //from decode stage
 
 
 // Outputs
@@ -162,7 +164,7 @@ if_stage if_stage_0 (
 //            IF/ID Pipeline Register           //
 //                                              //
 //////////////////////////////////////////////////
-assign if_id_enable = 1;
+assign if_id_enable = (~HzDU_detect); // stall when d_hazard detected
 
 always_ff @(posedge clk or posedge rst) begin
 	if(rst) begin
@@ -196,8 +198,12 @@ id_stage id_stage_0 (
 .mem_wb_reg_wr			(mem_wb_reg_wr), 
 .wb_reg_wr_data_out     (wb_reg_wr_data_out),  	
 .if_id_valid_inst       (if_id_valid_inst),
+.rd_id_ex				(id_ex_dest_reg_idx),//allagi gia datahazards1
+.rd_ex_mem				(ex_mem_dest_reg_idx),//allagi gia datahazards2
+.rd_mem_wb				(mem_wb_dest_reg_idx),//allagi gia datahazards3
 
 // Outputs
+.d_hazard_detected		(HzDU_detect), //entopismos sima epistrofi sto fetch
 .id_reg_wr_out          (id_reg_wr_out),
 .id_funct3_out			(id_funct3_out),
 .id_ra_value_out		(id_rega_out),
@@ -262,7 +268,9 @@ always_ff @(posedge clk or posedge rst) begin
             id_ex_reg_wr        <=  id_reg_wr_out;
 			
 			id_ex_PC            <=  if_id_PC;
-			id_ex_IR            <=  if_id_IR;// allagi 2 gia jumps ex_take_branch_out ? `NOOP_INST :
+			id_ex_IR            <= 	HzDU_detect ? `NOOP_INST : if_id_IR;
+			// allagi 2 gia jumps ex_take_branch_out ? `NOOP_INST :
+
 			id_ex_rega          <=  id_rega_out;
 			id_ex_regb          <=  id_regb_out;
 			id_ex_imm			<=  id_immediate_out;
