@@ -36,7 +36,7 @@ assign PC_plus_4 = PC_reg + 4;
 assign next_PC = (ex_branch_take) ? ex_current_target_PC_out : PC_plus_4;// ex_take_branch_out swap and ex_target_PC_out
 
 // stall PC
-assign PC_enable = 1 ;// allagi gia hazard detect  if_valid_inst_out |ex_take_branch_out &
+assign PC_enable = ~d_hazard_detected ;// allagi gia hazard detect  if_valid_inst_out |ex_take_branch_out &
 //| d_hazard_detected to ebgala apo tin nor
 
 // Pass PC down pipeline w/instruction
