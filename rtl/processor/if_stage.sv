@@ -9,7 +9,9 @@ module if_stage  (input logic 	      clk,             // system clk
 				  input logic [31:0]  ex_target_PC_out,  // target pc: use if take_branch is TRUE
 				  input logic [31:0]  Imem2proc_data,    // Data coming back from instruction-memory
 				  input logic 		  d_hazard_detected, // Data from decode stage data hazard detection
-					
+				  input logic 		  ex_branch_take, // before the pipeline register
+				  input logic [31:0]  ex_current_target_PC_out,// allagi
+
 				  output logic [31:0] proc2Imem_addr,    // Address sent to Instruction memory
 				  output logic [31:0] if_PC_out,         // current PC
 				  output logic [31:0] if_NPC_out,        // PC + 4
@@ -31,10 +33,11 @@ assign if_IR_out = Imem2proc_data;
 assign PC_plus_4 = PC_reg + 4;
 
 // next PC 
-assign next_PC = (ex_take_branch_out) ? ex_target_PC_out : PC_plus_4;
+assign next_PC = (ex_branch_take) ? ex_current_target_PC_out : PC_plus_4;// ex_take_branch_out swap and ex_target_PC_out
 
 // stall PC
-assign PC_enable = (~ex_take_branch_out)|(~d_hazard_detected);// allagi gia hazard detect  if_valid_inst_out |ex_take_branch_out &
+assign PC_enable = 1 ;// allagi gia hazard detect  if_valid_inst_out |ex_take_branch_out &
+//| d_hazard_detected to ebgala apo tin nor
 
 // Pass PC down pipeline w/instruction
 assign if_PC_out = PC_reg;
