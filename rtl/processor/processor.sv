@@ -166,7 +166,7 @@ if_stage if_stage_0 (
 //            IF/ID Pipeline Register           //
 //                                              //
 //////////////////////////////////////////////////
-assign if_id_enable = (~HzDU_detect); //stall when d_hazard detected
+assign if_id_enable = (ex_take_branch_out |(~HzDU_detect)); //stall when d_hazard detected
 
 always_ff @(posedge clk or posedge rst) begin
 	if(rst) begin
@@ -264,10 +264,10 @@ always_ff @(posedge clk or posedge rst) begin
 			id_ex_opb_select    <=  id_opb_select_out;
 			id_ex_alu_func      <=  id_alu_func_out;
 			id_ex_rd_mem        <=  id_rd_mem_out;
-			id_ex_wr_mem        <=  HzDU_detect ?  0 : id_wr_mem_out;// allagi gia hazards HzDU_detect ?  0 :
+			id_ex_wr_mem        <=  (HzDU_detect || ex_take_branch_out) ?  0 : id_wr_mem_out;// allagi gia hazards HzDU_detect ?  0 :
 			id_ex_illegal       <=  id_illegal_out;
 			id_ex_valid_inst    <=  id_valid_inst_out;
-            id_ex_reg_wr        <=  HzDU_detect ?  0 : id_reg_wr_out;// allagi gia hazards HzDU_detect ?  0 :
+            id_ex_reg_wr        <=  (HzDU_detect || ex_take_branch_out) ?  0 : id_reg_wr_out;// allagi gia hazards HzDU_detect ?  0 :
 			
 			id_ex_PC            <=  if_id_PC;
 			id_ex_IR            <= 	( HzDU_detect || ex_take_branch_out) ? `NOOP_INST : if_id_IR;
@@ -276,12 +276,12 @@ always_ff @(posedge clk or posedge rst) begin
 			id_ex_rega          <=  id_rega_out;
 			id_ex_regb          <=  id_regb_out;
 			id_ex_imm			<=  id_immediate_out;
-			id_ex_dest_reg_idx  <=  id_dest_reg_idx_out;
+			id_ex_dest_reg_idx  <=  (HzDU_detect || ex_take_branch_out) ?  0 : id_dest_reg_idx_out;// allagi gia to kolima stin mul a0
 			
 			id_ex_NPC           <=  if_id_NPC;
 			id_ex_pc_add_opa	<=  id_pc_add_opa;
-			id_ex_uncond_branch <=  ex_take_branch_out ? `FALSE : id_uncond_branch;//allagi gia jump
-			id_ex_cond_branch	<=  ex_take_branch_out ? `FALSE : id_cond_branch;// allagi gia jump
+			id_ex_uncond_branch <=  (HzDU_detect || ex_take_branch_out) ? `FALSE : id_uncond_branch;//allagi gia jump
+			id_ex_cond_branch	<=  (HzDU_detect || ex_take_branch_out) ? `FALSE : id_cond_branch;// allagi gia jump
 		end // if
     end // else: !if(rst)
 end // always
