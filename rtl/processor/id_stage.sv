@@ -173,10 +173,20 @@ input logic [4:0]	mem_wb_dest_reg_idx, 	//index of rd
 input logic [31:0] 	wb_reg_wr_data_out, 	// Reg write data from WB Stage
 input logic         if_id_valid_inst,
 
-input logic [4:0]	rd_id_ex,
+input logic [4:0]	rd_id_ex,// kai gia forwarding , HazardUnit
 input logic [4:0]	rd_ex_mem,// For HazardUnit
 input logic [4:0]	rd_mem_wb,
 output logic 		d_hazard_detected, // To stall
+
+//forwarding
+input logic 		id_ex_WE,//write enable
+input logic 		ex_mem_WE,
+input logic 		mem_wb_WE,
+input logic [31:0]	ex_alu_result,
+input logic [31:0]	mem_forward,
+input logic [31:0]	wback_forward,
+input logic 		ex_mem_read,
+input logic 		id_ex_read,
 
 output logic [31:0] id_ra_value_out,    	// reg A value
 output logic [31:0] id_rb_value_out,    	// reg B value
@@ -217,14 +227,14 @@ assign write_en=mem_wb_valid_inst & mem_wb_reg_wr;
 //Data hazard detection unit
 logic d_from_ra, d_from_rb;
 logic [1:0] d_flag;
-always_comb begin 
-	if(ra_idx!=0 &&(ra_idx==rd_id_ex || ra_idx == rd_ex_mem || ra_idx == rd_mem_wb))
-		d_from_ra = 1;
-	else d_from_ra = 0;
-	if(rb_idx!=0 &&(rb_idx==rd_id_ex || rb_idx == rd_ex_mem || rb_idx == rd_mem_wb))
-		d_from_rb = 1;
-	else d_from_rb = 0;
-end 
+//always_comb begin 
+//	if(ra_idx!=0 &&(ra_idx==rd_id_ex || ra_idx == rd_ex_mem || ra_idx == rd_mem_wb))
+//		d_from_ra = 1;
+//	else d_from_ra = 0;
+//	if(rb_idx!=0 &&(rb_idx==rd_id_ex || rb_idx == rd_ex_mem || rb_idx == rd_mem_wb))
+//		d_from_rb = 1;
+//	else d_from_rb = 0;
+//end 
 //assign d_from_ra = (ra_idx!=0)&((ra_idx & rd_id_ex)|(ra_idx & rd_ex_mem)|(ra_idx & rd_mem_wb));
 //assign d_from_rb = (rb_idx!=0)&((rb_idx & rd_id_ex)|(rb_idx & rd_ex_mem)|(rb_idx & rd_mem_wb));
 //assign d_hazard_detected = d_from_ra | d_from_rb;
@@ -240,17 +250,55 @@ end
 
 //end of detection
 
+//forwarding logic
+//logic [1:0] forward_flag_ra;
+//logic [1:0] forward_flag_rb;
+logic [31:0] reg_ra_value;
+//logic [31:0] reg_rb_value;
+
+always_comb begin
+	if(id_ex_WE & (rd_id_ex!=0) & (ra_idx==rd_id_ex))
+		id_ra_value_out=ex_alu_result; //forward_flag_ra=1;
+	else if(ex_mem_WE & (rd_ex_mem!=0) & (ra_idx==rd_ex_mem))
+		id_ra_value_out=mem_forward; //forward_flag_ra=2;
+	else if(mem_wb_WE & (rd_mem_wb!=0) & (ra_idx==rd_mem_wb))
+		id_ra_value_out=wback_forward; //forward_flag_ra=3;
+	else 
+		id_ra_value_out=reg_ra_value;//forward_flag_ra=0;
+
+	if(id_ex_WE & (rd_id_ex!=0) & (rb_idx==rd_id_ex))
+		id_rb_value_out=ex_alu_result; //forward_flag_rb=1;
+	else if(ex_mem_WE & (rd_ex_mem!=0) & (rb_idx==rd_ex_mem))
+		id_rb_value_out=mem_forward; //forward_flag_rb=2;
+	else if(mem_wb_WE & (rd_mem_wb!=0) & (rb_idx==rd_mem_wb))
+		id_rb_value_out=wback_forward; //forward_flag_rb=3;
+	else 
+		id_rb_value_out=rb_val;//forward_flag_rb=0;
+end
+
+//stall forwarding
+always_comb begin 
+	if((id_ex_read & (ra_idx==rd_id_ex)) | ((ra_idx==rd_ex_mem)& ex_mem_read))
+		d_from_ra = 1;
+	else
+		d_from_ra = 0;
+	if((id_ex_read & (rb_idx==rd_id_ex)) | ((rb_idx==rd_ex_mem)& ex_mem_read))
+		d_from_rb = 1;
+	else 
+		d_from_rb = 0;
+end
+
 regfile regf_0(.clk		(clk),
 			   .rst		(rst),
 			   .rda_idx	(ra_idx),
-			   .rda_out	(id_ra_value_out), 
+			   .rda_out	(reg_ra_value), //id_ra_value_out
 			   .rdb_idx	(rb_idx),
 			   .rdb_out	(rb_val), 
 			   .wr_en	(write_en),
 			   .wr_idx	(mem_wb_dest_reg_idx),
 			   .wr_data	(wb_reg_wr_data_out));
 
-assign id_rb_value_out=rb_val;
+//assign id_rb_value_out=rb_val;
 
 // instantiate the instruction inst_decoder
 inst_decoder inst_decoder_0(.inst	        (if_id_IR),

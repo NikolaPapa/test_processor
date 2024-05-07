@@ -203,6 +203,15 @@ id_stage id_stage_0 (
 .rd_id_ex				(id_ex_dest_reg_idx),//allagi gia datahazards1
 .rd_ex_mem				(ex_mem_dest_reg_idx),//allagi gia datahazards2
 .rd_mem_wb				(mem_wb_dest_reg_idx),//allagi gia datahazards3
+//inputs forwarding
+.id_ex_WE				(id_ex_reg_wr),
+.ex_mem_WE				(ex_mem_reg_wr),
+.mem_wb_WE				(mem_wb_reg_wr),
+.mem_forward			(ex_mem_alu_result),
+.ex_alu_result			(ex_alu_result_out),
+.wback_forward			(wb_reg_wr_data_out),
+.id_ex_read				(id_ex_rd_mem),
+.ex_mem_read			(ex_mem_rd_mem),
 
 // Outputs
 .d_hazard_detected		(HzDU_detect), //entopismos sima epistrofi sto fetch
@@ -232,7 +241,7 @@ id_stage id_stage_0 (
 assign id_ex_enable = 1; // disabled when HzDU initiates a stall
 // synopsys sync_set_rst "rst"
 always_ff @(posedge clk or posedge rst) begin
-	if (rst) begin //sys_rst
+	if (rst || HzDU_detect || ex_take_branch_out) begin //sys_rst
 		//Control
 		id_ex_funct3		<=  0;
 		id_ex_opa_select    <=  `ALU_OPA_IS_REGA;
@@ -264,24 +273,27 @@ always_ff @(posedge clk or posedge rst) begin
 			id_ex_opb_select    <=  id_opb_select_out;
 			id_ex_alu_func      <=  id_alu_func_out;
 			id_ex_rd_mem        <=  id_rd_mem_out;
-			id_ex_wr_mem        <=  (HzDU_detect || ex_take_branch_out) ?  0 : id_wr_mem_out;// allagi gia hazards HzDU_detect ?  0 :
+			id_ex_wr_mem        <=  id_wr_mem_out;// allagi gia hazards
+			//(HzDU_detect || ex_take_branch_out) ?  0 :
 			id_ex_illegal       <=  id_illegal_out;
 			id_ex_valid_inst    <=  id_valid_inst_out;
-            id_ex_reg_wr        <=  (HzDU_detect || ex_take_branch_out) ?  0 : id_reg_wr_out;// allagi gia hazards HzDU_detect ?  0 :
-			
+            id_ex_reg_wr        <=  id_reg_wr_out;// allagi gia hazards HzDU_detect ?  0 :
+			//(HzDU_detect || ex_take_branch_out) ?  0 :
 			id_ex_PC            <=  if_id_PC;
-			id_ex_IR            <= 	( HzDU_detect || ex_take_branch_out) ? `NOOP_INST : if_id_IR;
-			// allagi 2 gia jumps (HzDU_detect) ? `NOOP_INST : || ex_take_branch_out
+			id_ex_IR            <= 	if_id_IR;
+			// allagi 2 gia jumps ( HzDU_detect || ex_take_branch_out) ? `NOOP_INST :
 
 			id_ex_rega          <=  id_rega_out;
 			id_ex_regb          <=  id_regb_out;
 			id_ex_imm			<=  id_immediate_out;
-			id_ex_dest_reg_idx  <=  (HzDU_detect || ex_take_branch_out) ?  0 : id_dest_reg_idx_out;// allagi gia to kolima stin mul a0
-			
+			id_ex_dest_reg_idx  <=  id_dest_reg_idx_out;// allagi gia to kolima stin mul a0
+			//(HzDU_detect || ex_take_branch_out) ?  0 :
 			id_ex_NPC           <=  if_id_NPC;
 			id_ex_pc_add_opa	<=  id_pc_add_opa;
-			id_ex_uncond_branch <=  (HzDU_detect || ex_take_branch_out) ? `FALSE : id_uncond_branch;//allagi gia jump
+			id_ex_uncond_branch <=  id_uncond_branch;//allagi gia jump
+			//(HzDU_detect || ex_take_branch_out) ? `FALSE :
 			id_ex_cond_branch	<=  (HzDU_detect || ex_take_branch_out) ? `FALSE : id_cond_branch;// allagi gia jump
+			//(HzDU_detect || ex_take_branch_out) ? `FALSE :
 		end // if
     end // else: !if(rst)
 end // always
