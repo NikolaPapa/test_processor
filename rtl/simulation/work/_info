@@ -11,7 +11,7 @@ cModel Technology
 Z0 d//wsl$$/Ubuntu/home/nikopapa88ece/ProcessorArch/rtl/simulation
 valu
 Z1 DXx6 sv_std 3 std 0 22 VYECXdT12H8WgbUP_5Y6:3
-Z2 !s110 1713899005
+Z2 !s110 1715074574
 !i10b 1
 !s100 3VX9Aa?kzFFf1kaDjTRh12
 Z3 !s11b Dg1SIo80bB@j0V0VzS_@n1
@@ -28,14 +28,14 @@ Z8 OV;L;2020.1;71
 r1
 !s85 0
 31
-Z9 !s108 1713899004.000000
+Z9 !s108 1715074573.000000
 !s107 processor_tb.sv|memory.sv|../processor/processor.sv|../processor/wb_stage.sv|../processor/mem_stage.sv|../processor/ex_stage.sv|../processor/id_stage.sv|../processor/regfile.sv|../processor/if_stage.sv|../sys_defs.vh|
 Z10 !s90 -reportprogress|300|-f|files_rtl.f|
 !i113 1
 Z11 tCvgOpt 0
 vex_stage
 R1
-Z12 !s110 1713899004
+R2
 !i10b 1
 !s100 X4L2GV_cceJ`Sieo@86Wm0
 R3
@@ -53,37 +53,37 @@ r1
 !s85 0
 31
 R9
-Z13 !s107 processor_tb.sv|memory.sv|../processor/processor.sv|../processor/wb_stage.sv|../processor/mem_stage.sv|../processor/ex_stage.sv|../processor/id_stage.sv|../processor/regfile.sv|../processor/if_stage.sv|../sys_defs.vh|
+Z12 !s107 processor_tb.sv|memory.sv|../processor/processor.sv|../processor/wb_stage.sv|../processor/mem_stage.sv|../processor/ex_stage.sv|../processor/id_stage.sv|../processor/regfile.sv|../processor/if_stage.sv|../sys_defs.vh|
 R10
 !i113 1
 R11
 vid_stage
 R1
-R12
+R2
 !i10b 1
-!s100 IX9TE:b:]YUILhZhBdkAH1
+!s100 ^Kdn2Yn:[mo7]jWQZ3nWe3
 R3
-I5Sz06]VKf[<:4O[k_GAGm1
+I_Pb=9RP0Z=V[oF;YKAk`;3
 R4
 S1
 R0
-Z14 w1713726105
-Z15 8../processor/id_stage.sv
-Z16 F../processor/id_stage.sv
+Z13 w1715074562
+Z14 8../processor/id_stage.sv
+Z15 F../processor/id_stage.sv
 !i122 0
-L0 159 152
+L0 165 163
 R8
 r1
 !s85 0
 31
 R9
-R13
+R12
 R10
 !i113 1
 R11
 vif_stage
 R1
-R12
+Z16 !s110 1715074573
 !i10b 1
 !s100 MdgJ0<[M1TX=5aWJMBlFo0
 R3
@@ -101,31 +101,31 @@ r1
 !s85 0
 31
 R9
-R13
+R12
 R10
 !i113 1
 R11
 vinst_decoder
 R1
-R12
+R2
 !i10b 1
-!s100 ln12V<>B7l?i;bPB]a7KY2
+!s100 EaJC5m5QOD[6N8PA]JfY`1
 R3
-IGS?`D7]7>JIj<]]I01DZ01
+I983JTVBjS37HB<9mMa_773
 R4
 S1
 R0
+R13
 R14
 R15
-R16
 !i122 0
-L0 7 148
+L0 7 154
 R8
 r1
 !s85 0
 31
 R9
-R13
+R12
 R10
 !i113 1
 R11
@@ -149,7 +149,7 @@ r1
 !s85 0
 31
 R9
-R13
+R12
 R10
 !i113 1
 R11
@@ -173,7 +173,7 @@ r1
 !s85 0
 31
 R9
-R13
+R12
 R10
 !i113 1
 R11
@@ -197,7 +197,7 @@ r1
 !s85 0
 31
 R9
-R13
+R12
 R10
 !i113 1
 R11
@@ -221,13 +221,13 @@ r1
 !s85 0
 31
 R9
-R13
+R12
 R10
 !i113 1
 R11
 vregfile
 R1
-R12
+R16
 !i10b 1
 !s100 :YYG2klhGB`cznfQUEMlG3
 R3
@@ -245,7 +245,7 @@ r1
 !s85 0
 31
 R9
-R13
+R12
 R10
 !i113 1
 R11
@@ -269,7 +269,7 @@ r1
 !s85 0
 31
 R9
-R13
+R12
 R10
 !i113 1
 R11

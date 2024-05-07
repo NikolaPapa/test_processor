@@ -8,7 +8,8 @@ module inst_decoder(
 input [31:0] 		inst,
 input logic valid_inst_in,  // ignore inst when low, outputs will
 					        // reflect noop (except valid_inst)
-
+//output d_hazard flag gia periptoseis
+output logic [1:0]  hazard_flag,
 output logic [1:0] 	opa_select,
 output logic [1:0] 	opb_select,
 output logic        dest_reg, // mux selects
@@ -39,7 +40,7 @@ always_comb begin
 			opa_select = `ALU_OPA_IS_REGA;
 			opb_select = `ALU_OPB_IS_REGB;
 			dest_reg = `DEST_IS_REGC;
-
+			hazard_flag = 0; // flag gia periptoseis
 			case({inst[14:12], inst[31:25]})
 				`ADD_INST  : alu_func = `ALU_ADD;   
 				`SUB_INST  : alu_func = `ALU_SUB;    
@@ -61,7 +62,7 @@ always_comb begin
 			opa_select = `ALU_OPA_IS_REGA;
 			opb_select = `ALU_OPB_IS_IMM;
 			dest_reg = `DEST_IS_REGC;
-
+			hazard_flag = 1;
 			case(inst[14:12])
 				`ADDI_INST : alu_func = `ALU_ADD;
 				`XORI_INST : alu_func = `ALU_XOR;
@@ -87,14 +88,15 @@ always_comb begin
 			dest_reg = `DEST_IS_REGC;
 			rd_mem = `TRUE;
 			alu_func = `ALU_ADD;
-			illegal=(inst[14:12]!=2)?`TRUE:`FALSE;			
+			illegal=(inst[14:12]!=2)?`TRUE:`FALSE;	
+			hazard_flag = 1;		
 		end //I_LD_TYPE
 
 		`S_TYPE: begin
 			opa_select = `ALU_OPA_IS_REGA;
 			opb_select = `ALU_OPB_IS_IMM;
 			alu_func = `ALU_ADD;
-			
+			hazard_flag = 0; //dyo tsekarei
 			case(inst[14:12])
 				`SW_INST:   wr_mem = `TRUE;
 				default: illegal = `TRUE;
@@ -105,7 +107,7 @@ always_comb begin
 			opa_select = `ALU_OPA_IS_PC;
 			opb_select = `ALU_OPB_IS_IMM;
 			cond_branch = `TRUE;
-			
+			hazard_flag =0;// 2 check gia d hazards
 			case(inst[14:12])
 				3'd2, 3'd3: illegal = `TRUE;
 				default: alu_func = `ALU_ADD;
@@ -118,6 +120,7 @@ always_comb begin
 			dest_reg = `DEST_IS_REGC;
 			alu_func = `ALU_ADD;
 			uncond_branch = `TRUE;
+			hazard_flag = 2; // no check
 		end //J-TYPE
 		
 		`I_JAL_TYPE: begin
@@ -126,7 +129,7 @@ always_comb begin
 			dest_reg = `DEST_IS_REGC;
 			alu_func = `ALU_ADD;
 			uncond_branch = `TRUE;
-			
+			hazard_flag = 1;
 			illegal = (inst[14:12] != 3'h0) ? `TRUE : `FALSE;
 		end //I_JAL_TYPE
 		
@@ -135,6 +138,7 @@ always_comb begin
 			opb_select = `ALU_OPB_IS_IMM;
 			dest_reg = `DEST_IS_REGC;
 			alu_func = `ALU_ADD;
+			hazard_flag = 2;
 		end //U_LD_TYPE
 		
 		`U_AUIPC_TYPE: begin
@@ -142,9 +146,11 @@ always_comb begin
 			opb_select = `ALU_OPB_IS_IMM;
 			dest_reg = `DEST_IS_REGC;
 			alu_func = `ALU_ADD;
+			hazard_flag = 2;
 		end //U_AUIPC_TYPE
 		
 		`I_BREAK_TYPE: begin
+			hazard_flag = 1;
 			illegal = (inst[31:20] != 12'h1); //if imm=0x1 it is a ebreak (environmental break)
 		end
 		
@@ -210,6 +216,7 @@ assign write_en=mem_wb_valid_inst & mem_wb_reg_wr;
 
 //Data hazard detection unit
 logic d_from_ra, d_from_rb;
+logic [1:0] d_flag;
 always_comb begin 
 	if(ra_idx!=0 &&(ra_idx==rd_id_ex || ra_idx == rd_ex_mem || ra_idx == rd_mem_wb))
 		d_from_ra = 1;
@@ -220,7 +227,16 @@ always_comb begin
 end 
 //assign d_from_ra = (ra_idx!=0)&((ra_idx & rd_id_ex)|(ra_idx & rd_ex_mem)|(ra_idx & rd_mem_wb));
 //assign d_from_rb = (rb_idx!=0)&((rb_idx & rd_id_ex)|(rb_idx & rd_ex_mem)|(rb_idx & rd_mem_wb));
-assign d_hazard_detected = d_from_ra | d_from_rb;
+//assign d_hazard_detected = d_from_ra | d_from_rb;
+
+always_comb begin 
+	case(d_flag)
+		0: d_hazard_detected = d_from_ra | d_from_rb;
+		1: d_hazard_detected = d_from_ra;
+		2: d_hazard_detected = 0;
+		default: d_hazard_detected = d_from_ra | d_from_rb;
+	endcase
+end
 
 //end of detection
 
@@ -245,6 +261,7 @@ inst_decoder inst_decoder_0(.inst	        (if_id_IR),
 							.dest_reg		(dest_reg_select),
 							.rd_mem			(id_rd_mem_out),
 							.wr_mem			(id_wr_mem_out),
+							.hazard_flag	(d_flag), // check gia typo hazard
 							.cond_branch	(cond_branch),
 							.uncond_branch	(uncond_branch),
 							.illegal		(id_illegal_out),
